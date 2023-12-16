@@ -17,13 +17,14 @@
 // check rocminfo | grep "Wavefront Size". Should be supported on all new GPU's
 // dirty hack to force wavefront_size 32 so this compiles
 // RDNA 2 defaults to 64 which conflicts with kQuantizeBlockwise
+#undef __AMDGCN_WAVEFRONT_SIZE
 #define __AMDGCN_WAVEFRONT_SIZE 32 
 
 #include <hip/hip_runtime_api.h>
 #include <hip/hip_fp16.h>
 #include <hipblas/hipblas.h>
-#include <hipblaslt/hipblaslt.h> //only using header to allow redefines
 #include <hipsparse/hipsparse.h>
+#include "hip/hipblaslt-compat.h"
 
 #define cudaPeekAtLastError hipPeekAtLastError
 #define cudaMemset hipMemset
@@ -42,7 +43,9 @@
 #define cublasStatus_t hipblasStatus_t
 #define cublasGemmStridedBatchedEx hipblasGemmStridedBatchedEx
 #define cublasOperation_t hipblasOperation_t
-#define cublasLtMatrixLayoutCreate hipblasLtMatrixLayoutCreate
+#define cublasLtMatrixLayoutCreate hipblasStatus_t 
+#define cublasLtHandle_t hipblasLtHandle_t
+#define cublasLtCreate hipblasLtCreate
 #define cudaError_t hipError_t
 #define cudaGetErrorString hipGetErrorString
 #define cudaSuccess hipSuccess
@@ -55,8 +58,7 @@
 #define cusparseHandle_t hipsparseHandle_t
 #define cusparseCreate hipsparseCreate
 #define __nv_bfloat16 hip_bfloat16
-#define cublasLtHandle_t hipblasLtHandle_t
-#define cublasLtCreate hipblasLtCreate
+
 #define CUBLAS_GEMM_DEFAULT HIPBLAS_GEMM_DEFAULT
 #define CUBLAS_GEMM_DEFAULT_TENSOR_OP HIPBLAS_GEMM_DEFAULT //TODO: HIP didn't have the right one, might cause issues 
 
