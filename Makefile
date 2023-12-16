@@ -7,7 +7,7 @@ ifeq ($(CUDA_HOME),)
 	CUDA_HOME:= $(shell which nvcc | rev | cut -d'/' -f3- | rev)
 endif
 ifeq ($(ROCM_HOME),)
-	ROCM_HOME:= $(shell which hipcc | rev | cut -d'/' -f4- | rev)
+	ROCM_HOME:= $(shell which hipcc | rev | cut -d'/' -f3- | rev)
 endif
 
 ifneq ($(CUDA_HOME),)
@@ -18,8 +18,9 @@ endif
 
 else ifneq ($(ROCM_HOME),)
 ifndef ROCM_TARGET
-$(error ERROR: ROCM_TARGET not set. Call make with ROCM string (see https://www.llvm.org/docs/AMDGPUUsage.html#processors), for example: make hip ROCM_TARGET=gfx1030)
-ROCM_TARGET:=
+$(warning WARNING: ROCM_TARGET not set, compiling for all targets. Call make with ROCM arch, for example: make hip ROCM_TARGET=gfx1030)
+define ROCM_TARGET gfx900;gfx906;gfx908;gfx90a;gfx1030;gfx1100;gfx1101
+endef
 endif
 else
 $(warning WARNING: Unable to find hipcc in path, fallback to ROCM_HOME /opt/rocm)
